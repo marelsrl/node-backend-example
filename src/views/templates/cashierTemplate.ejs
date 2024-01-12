@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../partials/head'); -%>
+</head>
+<body>
+
+    
+
+    <main class="app-template-main" style="display:flex; flex-direction:column">
+        
+     <div class="nav-container">
+        <div class="nav-left-container">
+            <div class="nav-left-content">
+                MAREL SUPERMERCATI
+            </div>
+        </div>
+        <div class="nav-right-container">
+            <nav role="navigation">
+            <ul>
+              <li><a href="#">Aggiorna</a></li>
+              
+              <li><a href="#">Sinalizza un Problema</a></li>
+
+              <li><a href="#">Idioma</a>
+                <ul class="dropdown">
+                  <li><a href="#">Italiano</a></li>
+                  <li><a href="#">Inglese</a></li>
+                  <li><a href="#">Tedesco</a></li>
+                </ul>
+              </li>
+
+
+              <li><a href="#">Utente</a>
+                <ul class="dropdown">
+                  <li><a href="#">Profilo</a></li>
+                  <li><a href="#">Messaggi</a></li>
+                </ul>
+              </li>
+
+            </ul>
+          </nav>
+        </div>
+        
+     </div>   
+
+     
+
+        
+        
+        <div class="flex flex-col w-[83rem] mx-auto">
+            <%- include('../pages/' + content ); -%>
+        </div>
+
+
+      
+     
+   
+
+    </main>
+  
+</body>
+</html>

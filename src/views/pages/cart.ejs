@@ -1,0 +1,322 @@
+    <div class="content">
+
+        <div>
+            <h3>CARRELLO DI SPESA</h3>
+
+            <select id="scanner" onchange="upcChange()" onfocus="this.selectedIndex=-1;this.blur();">
+                
+                <% for (var i = 0; i < products.length ; i++) { %>
+                    <option value="<%= products[i].upc %>"><%= products[i].upc %></option>
+                <% } %>
+            </select>
+            
+        </div>
+
+        <div id="show">
+            <input type="text" id="selection" />
+            
+
+        </div>
+
+        <!-- <div id="cart">
+            <div>
+                <ul id = "cart-items"></ul>
+            </div>
+        </div> -->
+
+        <!-- <div x-data="{ open: false, toggle() { this.open = ! this.open } }">
+            <button @click="toggle()">Toggle Content</button>
+        
+            <div x-show="open">
+                Content...
+            </div>
+        </div> -->
+
+        <div x-data="{}">
+            <button @click="closeCart()">Close Cart</button>
+        
+            
+        </div>
+
+        <div id="cartItems"></div>
+
+         <div id="list"></div>
+
+    </div>
+    
+  
+    <script>
+
+
+
+        var cart ={}
+        
+        var metaCart = {}
+
+        var items =[]
+
+        var counts = {}
+
+        var products = JSON.parse('<%- JSON.stringify(products) %> ')
+
+        var prices = JSON.parse('<%- JSON.stringify(prices) %> ')
+
+        var user = JSON.parse('<%- JSON.stringify(user) %> ')
+      
+       console.log(prices)
+
+
+        //var products = JSON.parse(proString)
+        //var prices = JSON.parse(pricesString)
+
+        metaCart.promoCount = 0
+        metaCart.regularCount = 0
+
+        
+        var ul = document.getElementById('cart-items');
+
+
+        function data(){
+            return{
+                cart:{...cart},
+                metacart:{...metaCart},
+                items:Array.from(items),
+                counts:{...counts}
+
+            }
+        }
+
+        
+       
+        function upcChange(){
+            var sel = document.getElementById('scanner').value
+            var input = document.getElementById('selection')
+            input.value = sel
+            var item = products.filter((p)=>p.upc == sel)[0]
+            var itemPrice = prices.filter((p)=>p.upc == sel)[0]
+            var scanned = {...item, ...itemPrice}
+
+            var itemsPromo = {}
+
+            console.log(data())
+           
+            // set index of item in cart
+            scanned.index = items.length + 1
+
+            console.log(scanned)
+
+            //group items and count ocurrences
+            counts[scanned.productId] = counts[scanned.productId] ? counts[scanned.productId] + 1 : 1; 
+
+            //verify if price is promo and calculate final price for promo type 1
+            if (scanned.promoType>0){
+            //***********************is a product with promo price
+            metaCart.promoCount++
+            
+            
+
+            //select products with simple discounted price
+            if(scanned.promoType==1 && scanned.nthUnit==1){
+                   //calculates discount value based on porcentage or strict value
+                   scanned.discountValue = (scanned.exactDiscountedPrice &&
+                                            scanned.exactDiscountedPrice > 0)?
+                                            scanned.regularPrice - scanned.exactDiscountedPrice:scanned.regularPrice*scanned.discount
+                    
+                   //calculates the final price based on discount value or strict value 
+                   scanned.calculatedPrice = (scanned.exactDiscountedPrice &&
+                                            scanned.exactDiscountedPrice > 0)?
+                                            scanned.exactDiscountedPrice:scanned.regularPrice-scanned.discountValue
+
+                } else {scanned.calculatedPrice = scanned.regularPrice}
+            
+                //select products with buy X units and pay x-y units
+            if(scanned.promoType ==1 && scanned.nthUnit > 1){
+
+                    //divide all occurences by value nth element
+                    if(counts[scanned.productId] % scanned.nthUnit === 0){
+                    
+                    //set nth product price with the discount
+                    var calculated_price = scanned.regularPrice - (scanned.regularPrice * scanned.discount)
+                    scanned.calculatedPrice = calculated_price
+                    scanned.discountValue = scanned.regularPrice - calculated_price
+
+                    } else {scanned.calculatedPrice = scanned.regularPrice} 
+                } 
+                
+                //select products with complex promo rules
+                console.log(scanned.hasOwnProperty('reference'))
+                console.log(scanned.reference !== undefined)
+            if(scanned.promoType ==2 && scanned.reference !== undefined){
+
+                var ref = scanned.reference
+                scanned.useReference = false        
+                //divide all occurences by value nth element
+                if(counts[scanned.productId] % scanned.nthUnit === 0){
+                   scanned.useReference = true    
+               console.log('need to implement promo', ref[0])
+
+                } else {scanned.calculatedPrice = scanned.regularPrice} 
+            }    
+ 
+                
+
+            }else{
+            //***********************is a product with regular price
+            metaCart.regularCount++
+            scanned.calculatedPrice = scanned.regularPrice
+                
+                                  
+
+            }
+
+
+
+            items.push(scanned)
+
+            //refactor list analysing complex promo rules
+            refactor()
+            
+            console.log(items)
+
+            metaCart.totalSavings = sumByPropertie(items,'discountValue')
+
+            console.log(metaCart)
+            console.log(counts)
+            
+            
+            //console.log(itemPrice)
+
+            //var li = document.createElement('li');
+            //li.setAttribute('class','item');
+
+            //ul.appendChild(li);
+
+            //li.innerHTML=li.innerHTML + item.name;
+
+            //createDOMitem(scanned, cart.length+1)
+
+            listItems(items);
+
+        }
+
+        function refactor(){
+            console.log('refactoring...' )
+            items.map((item)=>{
+                if(item.promoType==2 && item.useReference){
+                    console.log('lookfor reference items');
+                    const references = Array.from(item.reference)
+                    references.forEach(refer => {
+
+                        console.log(refer)
+                        console.log(refer.quantity)
+                        for(var i = 0; i < refer.quantity ; i++){
+                            console.log('passo do loop na referencia', refer.quantity)
+                            let referenceProduct = items.filter((p)=>{ return p.productId == refer.productId && p.consumedByPromo == undefined})[0]
+                            console.log('referenceProduct', referenceProduct)
+                            if(referenceProduct){
+                                //calculate position on the original array of items -- remember thet items index is base 1, so take 1 from it
+                                var pos = referenceProduct.index-1
+                                //update necessary fields
+                                items[pos].consumedByPromo = true
+                                items[pos].calculatedPrice = refer.price
+                            }
+                            
+                        }
+                        
+                    });
+                    
+                }
+                
+            })
+
+        }
+
+        function closeCart() {
+            console.log('close cart routine')
+        }
+
+
+        function listItems(list){
+
+            const div = document.getElementById('list')
+            div.innerHTML = ''
+            const ul = document.createElement('ul')
+
+
+            Array.from(list).forEach((el, index)=>{
+                console.log('no loop de items', el)
+                const rp = parseFloat(el.regularPrice).toFixed( 2 )
+                const pp = parseFloat(el.calculatedPrice).toFixed( 2 )
+                const is_promo = el.promoType>0
+
+                const liItem = `
+                <span>${el.name}</span>
+                
+                ${is_promo?
+                   `<span> promo: ${el.promoType}</span>
+                    <span> from: ${rp}</span>
+                    <span> by: ${pp}</span>`
+                    :
+                    `<span> regular </span>
+                     <span> price: ${rp}</span>
+                     <span> by: ${pp}</span>`
+                    
+                }  
+            `
+
+                ul.appendChild(
+                Object.assign(
+                    document.createElement('li'),
+                    { innerHTML : liItem ,
+                    id:'item-' + index
+                    }
+                )
+            )
+
+            })
+            
+            
+            div.appendChild(ul)
+
+        }
+        
+        function createDOMitem(item, index){
+            const div = document.getElementById('cartItems')
+            const rp = parseFloat(item.regularPrice).toFixed( 2 )
+            const pp = parseFloat(item.calculatedPrice).toFixed( 2 )
+            const is_promo = item.promoType>0
+            const box = `
+                <span>${item.name}</span>
+                
+                ${is_promo?
+                   `<span> promo: ${item.promoType}</span>
+                    <span> from: ${rp}</span>
+                    <span> by: ${pp}</span>`
+                    :
+                    `<span> price: ${rp}</span>`
+                }  
+            `
+            
+            div.appendChild(
+                Object.assign(
+                    document.createElement('div'),
+                    { innerHTML : box ,
+                    id:'item-' + index,
+                    class:"w-full border-solid border-2 border-sky-500"
+                    }
+                )
+            )
+        }
+
+        function sumByPropertie(array, prop){
+            return array.reduce( function(a, b){
+                let v = b[prop]? b[prop] : 0
+                return a + v;
+            }, 0);
+        };
+        
+
+       
+       
+    </script>   
+     

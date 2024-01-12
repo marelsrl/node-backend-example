@@ -1,0 +1,60 @@
+
+@local = http://localhost:3333
+
+
+//***********************************************
+// Users
+//***********************************************
+###
+GET {{local}}/api/v1/users
+//Content-Type: application/x-www-form-urlencoded
+//Content-Type: application/json
+
+// CREATE USER
+###
+POST {{local}}/api/v1/users
+Content-Type: application/json
+
+{
+    "username":"brizzio",
+    "email":"fabrizio.salvade@gmail.com",
+    "password":"fafapassword",
+    "first_name":"Fabrizio",
+    "last_name":"Salvade",
+    "active":false
+
+}
+
+
+###
+//update 
+PUT {{local}}/api/v1/users/1
+Content-Type: application/json
+
+{
+    "username":"brizzzzzzzzio"
+}
+
+###
+//delete
+DELETE  {{local}}/api/v1/users/5
+Content-Type: application/json
+
+
+
+//***********************************************
+// Projects
+//***********************************************
+###
+GET {{local}}/api/v1/projects?user_id=2
+//Content-Type: application/x-www-form-urlencoded
+//Content-Type: application/json
+
+###
+POST {{local}}/api/v1/projects
+Content-Type: application/json
+
+{
+    "title":"Plano Medonho",
+    "user_id":1
+}

@@ -1,0 +1,190 @@
+<!-- views/partials/head.ejs -->
+
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="icon" href="./public/ico/favicon.ico">
+<title><%= title %></title>
+<meta charset="utf-8">
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+<!--Import Google Icon Font-->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- <link src="../../../public/css/styles.css" rel="stylesheet"> -->
+
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+<!-- CSS (Adiciona um estilo comum a todas as páginas) -->
+
+<style>
+    html, body, .content-wrapper {
+    height: 100%;
+    }
+    
+    html{
+        font-family:Arial,helvetica,sans-serif;
+        font-size:100%;
+    }
+    
+    body{
+        font-size:1em;
+        font-family:inherit;
+        padding:10px;
+        position: fixed;
+    }
+
+    *,:before,:after{font-family:inherit;}
+
+    .content {
+    display: flex !important;
+    flex-direction: column !important;
+    width:100%;
+    height:100%;
+    min-width: 85vw;
+    min-height: 85vh;
+    border: solid;
+    padding:2%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    }
+
+    .cashier-content {
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    height:100%;
+    border: solid;
+    padding:2%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    }
+
+    
+    .sidebar {
+        width: 150px;
+    }
+    .sidebar ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 150px;
+        background-color: #f1f1f1;
+        height: 100%; /* Full height */
+        position: fixed; /* Make it stick, even on scroll */
+        overflow: auto; /* Enable scrolling if the sidenav has too much content */
+    }
+
+    .sidebar li{
+        min-height: 40px;
+    }
+
+    .sidebar li a {
+        display: block;
+        color: rgb(53, 52, 52);
+        margin-top: 20px;
+        text-decoration: none;
+        padding-left: 8px;
+        min-height: 40px;
+        }
+
+        /* Change the link color on hover */
+    .sidebar li a:hover {
+        background-color: #555;
+        color: white;
+        }
+
+    /* app navbar styles */
+        .nav-container {
+            display:flex;
+            flex-direction: row;
+            justify-content: space-between ;
+            align-items: center;
+            background-color: rgb(75, 74, 74);
+        
+        }
+
+        .nav-left-container {
+            
+            min-height: 100%;
+            background-color: rgb(26, 5, 99);
+        
+        }
+        .nav-left-content {
+            
+            padding:8px;
+            height: 50px;
+            color: #f1f1f1;
+           
+            
+            
+        }
+
+        nav a {
+        text-decoration: none;
+        }
+
+        nav {
+        font-family: monospace;
+        
+        }
+
+        nav ul {
+        background: darkorange;
+        list-style: none;
+        margin: 0;
+        padding-left: 0;
+        }
+
+        nav li {
+        color: #fff;
+        background: rgb(26, 5, 99);
+        display: block;
+        float: left;
+        padding: 1rem;
+        position: relative;
+        text-decoration: none;
+        transition-duration: 0.5s;
+        }
+        
+        nav li a {
+        color: #fff;
+        }
+
+        nav li:hover {
+        background: red;
+        cursor: pointer;
+        }
+
+        nav ul li ul {
+        background: orange;
+        visibility: hidden;
+        opacity: 0;
+        min-width: 5rem;
+        position: absolute;
+        transition: all 0.5s ease;
+        margin-top: 1rem;
+        left: 0;
+        display: none;
+        }
+
+        nav ul li:hover > ul,
+        nav ul li:focus-within > ul, /* this is the line we add */
+        nav ul li ul:hover {
+        visibility: visible;
+        opacity: 1;
+        display: block;
+        }
+
+        nav ul li ul li {
+        clear: both;
+        width: 100%;
+        }
+
+    /* end nav */
+
+</style>

@@ -1,0 +1,14 @@
+ //select products with buy X units and pay x-y units
+                if(scanned.promoType ==1 && scanned.nthUnit > 1){
+                    
+                    counts[scanned.productId] = counts[scanned.productId] ? counts[scanned.productId] + 1 : 1; 
+                        
+                    if(scanned.nthUnit === counts[scanned.productId]){
+                    
+                    //set nth product price to zero 
+                    scanned.calculatedPrice = 0
+
+                    } else {scanned.calculatedPrice = scanned.regularPrice} 
+                }    
+
+
